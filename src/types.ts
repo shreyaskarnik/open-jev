@@ -2,17 +2,17 @@ import type { ProgressInfo } from "@huggingface/transformers";
 
 /**
  * ONNX weight variants. `open-jev` ships `fp32`, `fp16`, `q4` and `q4f16`;
- * the `kev` models ship `q4` and `q4f16`.
+ * the `kev` models ship `q4` and `q4f16`; `julia-1` ships `fp32`.
  */
 export type OpenJevDtype = "fp32" | "fp16" | "q4" | "q4f16";
 
 /** Built-in model aliases. Any Hugging Face repo id with a compatible config works too. */
-export type ModelAlias = "open-jev" | "kev-0.6b" | "kev-4b";
+export type ModelAlias = "open-jev" | "kev-0.6b" | "kev-4b" | "julia-1";
 
 export type ModelId = ModelAlias | (string & {});
 
-/** Encoding family, detected from the repo's `config.json`. */
-export type ModelFamily = "open-jev" | "kev";
+/** Encoding family, detected from the repo's `config.json` (Julia 1: from its repo id). */
+export type ModelFamily = "open-jev" | "kev" | "julia";
 
 /** Execution backends: `webgpu`/`wasm` in the browser, `cpu` in Node.js. */
 export type OpenJevDevice = "webgpu" | "wasm" | "cpu";
