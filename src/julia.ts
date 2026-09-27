@@ -30,8 +30,12 @@ const NOUL_OPTION_TEXTS = ["false", "true"] as const;
 /** Limits of the original model: 2–20 options, at most 48 tokens each. */
 const MAX_OPTIONS = 20;
 const MAX_OPTION_TOKENS = 48;
-/** Room for the question and its options at the front of every sequence. */
-const HEAD_LENGTH = 256;
+/**
+ * Room for the question and its options at the front of every sequence.
+ * The model's own runtime and benchmark use 512; the budget only decides
+ * when a question is too long, not how it is encoded.
+ */
+const HEAD_LENGTH = 512;
 
 /** Repos known to ship the Julia 1 graph without a `config.json`. */
 export const JULIA_REPOS = ["SupersonicLabs/Julia-1-ONNX"];
@@ -113,7 +117,13 @@ export function juliaFamily(): FamilyAdapter {
 
   const optionTexts = (question: Question): string[] => {
     if (question.type === "noul") {
-      return [...NOUL_OPTION_TEXTS];
+      // Julia was trained with a description of each outcome; without one it
+      // falls back to the literal words (80.5% vs 65.2% on its noul benchmark).
+      const [no, yes] = NOUL_OPTION_TEXTS;
+      return [
+        question.descriptions?.false ?? no,
+        question.descriptions?.true ?? yes,
+      ];
     }
     // Julia's typed API renders a described choice as its description alone.
     if (question.type === "choice" && question.descriptions) {

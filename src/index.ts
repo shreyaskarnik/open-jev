@@ -44,6 +44,7 @@ export type {
   ModelFamily,
   ModelId,
   NoulAnswer,
+  NoulDescriptions,
   NoulQuestion,
   OpenJevDevice,
   OpenJevDtype,

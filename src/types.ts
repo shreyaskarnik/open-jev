@@ -109,7 +109,16 @@ export type ScoreQuestion<L extends string = string> = {
 export type NoulQuestion = {
   type: "noul";
   instructions: string;
+  /**
+   * What each outcome means, e.g. `{ false: "The customer still has the
+   * problem.", true: "Nothing is left to do." }`. Used by julia-1, which
+   * was trained with them (about 15 points better on its benchmark); the
+   * other models answer with their fixed no/yes options and ignore them.
+   */
+  descriptions?: NoulDescriptions;
 };
+
+export type NoulDescriptions = { false?: string; true?: string };
 
 export type Question = ChoiceQuestion | ScoreQuestion | NoulQuestion;
 
