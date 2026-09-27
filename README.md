@@ -92,7 +92,7 @@ answers.refund.answer; // boolean
 | ---------------------------------------------- | -------- | -------------------------------------------------------------- |
 | `choice(instructions, options, descriptions?)` | `choice` | Pick one option. Descriptions render as `option: description`. |
 | `score(instructions, levels)`                  | `score`  | Rate on an ordered scale of levels (first = lowest).           |
-| `noul(statement)`                              | `noul`   | Does the statement hold for the state? (yes/no)                |
+| `noul(statement, descriptions?)`               | `noul`   | Does the statement hold for the state? (yes/no)                |
 
 Limits per model:
 
@@ -101,6 +101,8 @@ Limits per model:
 | `open-jev` | 2 to 255         | 2 to 10        |
 | `kev-*`    | 1 to 255         | 2 to 255       |
 | `julia-1`  | 2 to 20          | 2 to 20        |
+
+`noul` can say what each outcome means: `noul("The problem is already solved.", { false: "The customer still has the problem.", true: "Nothing is left to do." })`. julia-1 was trained with these descriptions (80.5% on its `noul` benchmark with them, 65.2% with the literal false/true it gets otherwise); the other models answer with their fixed no/yes options and ignore them.
 
 The builders are optional sugar. Plain objects work too:
 
@@ -231,7 +233,7 @@ In both cases a temperature-scaled softmax within each question's group is that 
 <bos> {type} question: instructions <eos> <mask> option_1 <mask> option_2 … <eos> state <eos>
 ```
 
-one sequence per question, batched. The graph takes the `<mask>` positions (`marker_pos`, `marker_mask`) and the question type (`qtype`) and returns one logit per option. Options may be 48 tokens each and the question with its options 256; longer ones throw rather than being cut. A described choice is fed as its description alone, and `noul` uses `["false", "true"]`, as in Julia's own typed API. Text is tokenized one space-free word at a time, because Transformers.js splits runs of spaces differently from the Rust `tokenizers` library the model was trained with; this reproduces the original token ids exactly.
+one sequence per question, batched. The graph takes the `<mask>` positions (`marker_pos`, `marker_mask`) and the question type (`qtype`) and returns one logit per option. A described choice is fed as its description alone, and `noul` uses its `descriptions` when given and `["false", "true"]` otherwise, as in Julia's own typed API. Options may be 48 tokens each and the question with its options 512, as in the model's own benchmark. Longer questions or options throw rather than being cut. Text is tokenized one space-free word at a time, because Transformers.js splits runs of spaces differently from the Rust `tokenizers` library the model was trained with; this reproduces the original token ids exactly.
 
 ## Development
 
@@ -275,6 +277,6 @@ pnpm dev
 - Designed for browser environments; works in Node.js with `device: "cpu"` (or `auto`).
 - The models are English only. open-jev was trained on three public domains (banking support, movie reviews, Wikipedia yes/no), the kev models on ten. Questions outside these domains work but are less accurate; measure before relying on them. See the model cards linked above for numbers and limitations.
 - Loading a kev model logs one Transformers.js warning ("assuming encoder-only architecture"). It is expected: the graph is a custom pointer-head export, not a text generator.
-- Julia 1 is multilingual. Its model card reports 73.15% on typed decisions, measured on the original PyTorch runtime; this library reproduces that runtime's outputs (100/100 predictions on its published parity set, on WebGPU and CPU), not a new accuracy figure. Answers can depend on option order, so measure on your own questions.
+- Julia 1 is multilingual. Through this library it reproduces the model card's CPU run of its typed-decisions benchmark exactly (426/600 choice, 542/800 score, 483/600 noul) and matches 100/100 predictions of its parity set on WebGPU. Give `noul` questions `descriptions` for Julia, and measure on your own questions: answers can depend on option order.
 - Loading Julia 1 requests `config.json` and `onnx/model.onnx` once and gets 404s: Transformers.js probes the standard layout to size its progress bar. Loading is unaffected; open-jev reports progress from the files the export actually has.
 - Model weights are Apache-2.0, this library is MIT.
