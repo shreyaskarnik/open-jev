@@ -102,7 +102,7 @@ Limits per model:
 | `kev-*`    | 1 to 255         | 2 to 255       |
 | `julia-1`  | 2 to 20          | 2 to 20        |
 
-`noul` can say what each outcome means: `noul("The problem is already solved.", { false: "The customer still has the problem.", true: "Nothing is left to do." })`. julia-1 was trained with these descriptions (80.5% on its `noul` benchmark with them, 65.2% with the literal false/true it gets otherwise); the other models answer with their fixed no/yes options and ignore them.
+`noul` can say what each outcome means: `noul("The problem is already solved.", { false: "The customer still has the problem.", true: "Nothing is left to do." })`. julia-1 was trained with these descriptions (80.5% on its `noul` benchmark with them, 65.2% with the literal false/true it gets otherwise). On other text they may not help: on the demo app's short messages they made its yes/no answers worse, so test them on your own questions. The other models answer with their fixed no/yes options and ignore them.
 
 The builders are optional sugar. Plain objects work too:
 
