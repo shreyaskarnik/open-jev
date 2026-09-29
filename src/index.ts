@@ -75,7 +75,8 @@ type LoadedParts = {
  *
  * Create an instance with `OpenJev.load()`. Built-in models: `kev-0.6b`
  * (default) and `kev-4b` (Qwen3), `open-jev` (DeBERTa-v3-large) and
- * `julia-1` (Julia 1, mmBERT-small).
+ * `julia-1` (Julia 1, mmBERT-small) and `laya`, `laya-multilingual` and
+ * `laya-typed-decisions` (Convai's Laya, ModernBERT / mmBERT).
  */
 export class OpenJev {
   /** The model, family, backend and weight variant that were loaded. */
@@ -104,7 +105,8 @@ export class OpenJev {
    * instance.
    *
    * Supported options:
-   * - `model`: `kev-0.6b` (default), `kev-4b`, `open-jev`, `julia-1` or a Hugging Face repo id.
+   * - `model`: `kev-0.6b` (default), `kev-4b`, `open-jev`, `julia-1`, `laya`,
+   *   `laya-multilingual`, `laya-typed-decisions` or a Hugging Face repo id.
    * - `dtype`: `fp32 | fp16 | q4 | q4f16 | auto` (default `auto`).
    * - `device`: `webgpu | wasm | cpu | auto` (default `auto`).
    * - `onProgress`: download progress callback.
