@@ -6,14 +6,15 @@ It runs open reproductions of the _shape_ of TypeSafe AI's [Jev "System One" mod
 
 ## Models
 
-| Alias      | Repo                                                                                                                  | Base             | Weights (q4f16 / q4) | Notes                                                                      |
-| ---------- | --------------------------------------------------------------------------------------------------------------------- | ---------------- | -------------------- | -------------------------------------------------------------------------- |
-| `kev-0.6b` | [onnx-community/kev-0.6b-ONNX](https://huggingface.co/onnx-community/kev-0.6b-ONNX)                                   | Qwen3-0.6B-Base  | 0.34 GB / 0.38 GB    | Default. Small and fast. 8192-token context.                               |
-| `kev-4b`   | [onnx-community/kev-4b-ONNX](https://huggingface.co/onnx-community/kev-4b-ONNX)                                       | Qwen3-4B-Base    | 2.3 GB / 2.5 GB      | Most accurate. 8192-token context. Needs a capable GPU.                    |
-| `open-jev` | [onnx-community/open-jev-deberta-v3-large-ONNX](https://huggingface.co/onnx-community/open-jev-deberta-v3-large-ONNX) | DeBERTa-v3-large | 0.35 GB / 0.48 GB    | Also ships `fp16` (0.88 GB) and `fp32` (1.75 GB). 512-token context.       |
-| `julia-1`  | [SupersonicLabs/Julia-1-ONNX](https://huggingface.co/SupersonicLabs/Julia-1-ONNX)                                     | mmBERT-small     | fp32 only: 0.58 GB   | Multilingual. One sequence per question, 2–20 options. 1024-token default. |
+| Alias            | Repo                                                                                                                  | Base             | Weights (q4f16 / q4) | Notes                                                                                                                                                                                   |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------- | ---------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `kev-0.6b`       | [onnx-community/kev-0.6b-ONNX](https://huggingface.co/onnx-community/kev-0.6b-ONNX)                                   | Qwen3-0.6B-Base  | 0.34 GB / 0.38 GB    | Default. Small and fast. 8192-token context.                                                                                                                                            |
+| `kev-4b`         | [onnx-community/kev-4b-ONNX](https://huggingface.co/onnx-community/kev-4b-ONNX)                                       | Qwen3-4B-Base    | 2.3 GB / 2.5 GB      | Most accurate. 8192-token context. Needs a capable GPU.                                                                                                                                 |
+| `open-jev`       | [onnx-community/open-jev-deberta-v3-large-ONNX](https://huggingface.co/onnx-community/open-jev-deberta-v3-large-ONNX) | DeBERTa-v3-large | 0.35 GB / 0.48 GB    | Also ships `fp16` (0.88 GB) and `fp32` (1.75 GB). 512-token context.                                                                                                                    |
+| `gliner2-decide` | [onnx-community/GLiNER2.5-Decide-ONNX](https://huggingface.co/onnx-community/GLiNER2.5-Decide-ONNX)                   | DeBERTa-v3-large | 0.52 GB / 0.89 GB    | Fastino's [GLiNER2.5-Decide](https://huggingface.co/fastino/GLiNER2.5-Decide), trained on 17 operational domains. Also ships `fp16` (0.87 GB) and `fp32` (1.74 GB). 1024-token default. |
+| `julia-1`        | [SupersonicLabs/Julia-1-ONNX](https://huggingface.co/SupersonicLabs/Julia-1-ONNX)                                     | mmBERT-small     | fp32 only: 0.58 GB   | Multilingual. One sequence per question, 2–20 options. 1024-token default.                                                                                                              |
 
-Pass the alias as `model`, or any Hugging Face repo id whose `config.json` carries an `open_jev` or `kev` section. The encoding family is detected from that config. Julia 1's export ships without a `config.json`, so `SupersonicLabs/Julia-1-ONNX` is recognized by its repo id and loaded as published.
+Pass the alias as `model`, or any Hugging Face repo id whose `config.json` carries an `open_jev`, `kev` or `gliner2` section. The encoding family is detected from that config. Julia 1's export ships without a `config.json`, so `SupersonicLabs/Julia-1-ONNX` is recognized by its repo id and loaded as published.
 
 ## Install
 
@@ -32,7 +33,7 @@ const info = await OpenJev.info({ dtype: "q4f16" });
 console.log(info.isCached, info.downloadSize, info.device, info.dtype);
 
 const jev = await OpenJev.load({
-  model: "kev-0.6b", // default; or "kev-4b", "open-jev", "julia-1"
+  model: "kev-0.6b", // default; or "kev-4b", "open-jev", "gliner2-decide", "julia-1"
   dtype: "q4f16",
   onProgress: ({ progress }) =>
     console.log(`Model download: ${Math.round(progress * 100)}%`),
@@ -96,11 +97,12 @@ answers.refund.answer; // boolean
 
 Limits per model:
 
-| Model      | `choice` options | `score` levels |
-| ---------- | ---------------- | -------------- |
-| `open-jev` | 2 to 255         | 2 to 10        |
-| `kev-*`    | 1 to 255         | 2 to 255       |
-| `julia-1`  | 2 to 20          | 2 to 20        |
+| Model            | `choice` options | `score` levels |
+| ---------------- | ---------------- | -------------- |
+| `open-jev`       | 2 to 255         | 2 to 10        |
+| `kev-*`          | 1 to 255         | 2 to 255       |
+| `gliner2-decide` | 2 to 64          | 2 to 10        |
+| `julia-1`        | 2 to 20          | 2 to 20        |
 
 The builders are optional sugar. Plain objects work too:
 
@@ -155,7 +157,7 @@ type NoulAnswer = {
 Downloads (or reads from cache) the tokenizer and model and resolves to a ready instance. All options are optional:
 
 - `model` (default `"kev-0.6b"`)
-  - `"kev-0.6b"`, `"kev-4b"`, `"open-jev"`, `"julia-1"`, or a Hugging Face repo id / path Transformers.js understands.
+  - `"kev-0.6b"`, `"kev-4b"`, `"open-jev"`, `"gliner2-decide"`, `"julia-1"`, or a Hugging Face repo id / path Transformers.js understands.
 - `dtype` (default `"auto"`)
   - `fp32`, `fp16`, `q4` or `q4f16` (the kev models only ship `q4` and `q4f16`; `julia-1` only ships `fp32`).
   - `auto` picks the model's best WebGPU variant (`q4f16` for kev, `fp16` for open-jev) when `shader-f16` is supported, `q4` everywhere else. `julia-1` always uses `fp32`.
@@ -164,8 +166,8 @@ Downloads (or reads from cache) the tokenizer and model and resolves to a ready 
   - `auto` picks `webgpu` when available, `cpu` in Node.js, otherwise `wasm`.
 - `onProgress`
   - Called with `{ progress, loaded, total }` while files download. `progress` is `0..1`, `loaded` and `total` are bytes. Only fires when the rounded value changes.
-- `maxLength` (default `512` for open-jev, `8192` for kev, `1024` for julia-1)
-  - Context limit. For open-jev the whole sequence; for kev the state plus one question branch; for julia-1 each question's own sequence (the model takes up to 8192).
+- `maxLength` (default `512` for open-jev, `1024` for gliner2-decide and julia-1, `8192` for kev)
+  - Context limit. For open-jev and gliner2-decide the whole sequence; for kev the state plus one question branch; for julia-1 each question's own sequence (the model takes up to 8192). gliner2-decide reads longer inputs too. Its accuracy held up to 1,600 tokens in our tests, but each token adds about 2.4 ms on WebGPU.
 - `temperature`, `maxStateTokens`, `truncation`
   - Defaults for `decide()`, see below.
 
@@ -184,7 +186,7 @@ One forward pass, returns typed answers. Per-call options override the defaults 
 
 - `temperature` (default: open-jev's calibrated `1.05`, `1` for kev and julia-1)
   - Softmax temperature applied to each question's logits.
-- `maxStateTokens` (default `256` for open-jev, `8192` for kev; julia-1 gives the state whatever each question leaves of `maxLength`)
+- `maxStateTokens` (default `256` for open-jev, `896` for gliner2-decide, `8192` for kev; julia-1 gives the state whatever each question leaves of `maxLength`)
   - Token budget for the state. It is cut further if the questions would not fit in `maxLength`.
 - `truncation` (default `"cut"`)
   - `"cut"` drops trailing state tokens, `"error"` throws when the state does not fit.
@@ -205,7 +207,7 @@ Releases the ONNX session. Pending `decide()` calls finish first; the instance c
 
 ## How it works
 
-open-jev and kev read the state once and score every option of every question in a single pass. Julia 1 reads the state once per question, and all questions of a call run as one batch. The library builds the model-specific sequence and reads the right logits back.
+open-jev, kev and gliner2 read the state once and score every option of every question in a single pass. Julia 1 reads the state once per question, and all questions of a call run as one batch. The library builds the model-specific sequence and reads the right logits back.
 
 **open-jev** (DeBERTa-v3-large):
 
@@ -223,7 +225,15 @@ together with a span-slot tensor (`seg`) and per-pair slot ids (`pair_q`, `pair_
 
 The graph takes only `input_ids` and `attention_mask`, derives a block-causal mask from the delimiters so each question sees the state and itself only, and returns one logit per token. The library reads the value at every option's `</opt>` position. Caller text is escaped (`<|name|>` becomes `<¦name¦>`) so it can never forge a delimiter.
 
-In both cases a temperature-scaled softmax within each question's group is that question's distribution. `noul` questions use the fixed options `["no", "yes"]` the models were trained with.
+**gliner2** (GLiNER2.5-Decide, DeBERTa-v3-large):
+
+```
+( [P] instructions ( [L] option_1 [L] option_2 … ) ) [SEP_STRUCT] ( [P] … ) [SEP_TEXT] word word …
+```
+
+This is the classification path of Fastino's [GLiNER2](https://github.com/fastino-ai/GLiNER2) processor, reproduced token for token. The state is lowercased, split into words with the processor's regex and tokenized one word at a time (and given a terminal `.` if it has none); the instructions and options keep their case. `choice` descriptions are appended to the instructions as ` [DESCRIPTION] option: description` rather than to the option. The graph takes `marker_positions`, the index of every `[L]` token, and returns one logit per marker from the model's own 1024→2048→1 head. The ONNX conversion matches the Python library to about 1e-7 at fp32 and 3e-4 at fp16; the q4 variants can flip a close call.
+
+For open-jev, kev and gliner2 a temperature-scaled softmax within each question's group is that question's distribution. `noul` questions use the fixed options `["no", "yes"]` the models were trained with.
 
 **julia-1** (mmBERT-small, [Supersonic Labs](https://huggingface.co/SupersonicLabs/Julia-1)):
 

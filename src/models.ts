@@ -279,8 +279,12 @@ function gliner2Family(section: ConfigJson): FamilyAdapter {
     },
     defaults: {
       temperature: num(section.temperature, 1),
-      maxStateTokens: num(section.max_state_tokens, 384),
-      maxLength: num(section.max_len, 512),
+      // The export's `max_len` (512) is not a limit of the model: DeBERTa-v3
+      // uses relative positions only and the gliner2 library does not
+      // truncate. 1024 matches the library's accuracy on typed-decisions;
+      // longer contexts work too, at about 2.4 ms per token on WebGPU.
+      maxStateTokens: num(section.max_state_tokens, 896),
+      maxLength: 1024,
     },
     loadModel: async (modelId, options) =>
       (await AutoModel.from_pretrained(modelId, {
