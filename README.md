@@ -6,15 +6,18 @@ It runs open reproductions of the _shape_ of TypeSafe AI's [Jev "System One" mod
 
 ## Models
 
-| Alias            | Repo                                                                                                                  | Base             | Weights (q4f16 / q4) | Notes                                                                                                                                                                                   |
-| ---------------- | --------------------------------------------------------------------------------------------------------------------- | ---------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `kev-0.6b`       | [onnx-community/kev-0.6b-ONNX](https://huggingface.co/onnx-community/kev-0.6b-ONNX)                                   | Qwen3-0.6B-Base  | 0.34 GB / 0.38 GB    | Default. Small and fast. 8192-token context.                                                                                                                                            |
-| `kev-4b`         | [onnx-community/kev-4b-ONNX](https://huggingface.co/onnx-community/kev-4b-ONNX)                                       | Qwen3-4B-Base    | 2.3 GB / 2.5 GB      | Most accurate. 8192-token context. Needs a capable GPU.                                                                                                                                 |
-| `open-jev`       | [onnx-community/open-jev-deberta-v3-large-ONNX](https://huggingface.co/onnx-community/open-jev-deberta-v3-large-ONNX) | DeBERTa-v3-large | 0.35 GB / 0.48 GB    | Also ships `fp16` (0.88 GB) and `fp32` (1.75 GB). 512-token context.                                                                                                                    |
-| `gliner2-decide` | [onnx-community/GLiNER2.5-Decide-ONNX](https://huggingface.co/onnx-community/GLiNER2.5-Decide-ONNX)                   | DeBERTa-v3-large | 0.52 GB / 0.89 GB    | Fastino's [GLiNER2.5-Decide](https://huggingface.co/fastino/GLiNER2.5-Decide), trained on 17 operational domains. Also ships `fp16` (0.87 GB) and `fp32` (1.74 GB). 1024-token default. |
-| `julia-1`        | [SupersonicLabs/Julia-1-ONNX](https://huggingface.co/SupersonicLabs/Julia-1-ONNX)                                     | mmBERT-small     | fp32 only: 0.58 GB   | Multilingual. One sequence per question, 2–20 options. 1024-token default.                                                                                                              |
+| Alias                  | Repo                                                                                                                  | Base             | Weights (q4f16 / q4)        | Notes                                                                                                                                                                                   |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------- | ---------------- | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `kev-0.6b`             | [onnx-community/kev-0.6b-ONNX](https://huggingface.co/onnx-community/kev-0.6b-ONNX)                                   | Qwen3-0.6B-Base  | 0.34 GB / 0.38 GB           | Default. Small and fast. 8192-token context.                                                                                                                                            |
+| `kev-4b`               | [onnx-community/kev-4b-ONNX](https://huggingface.co/onnx-community/kev-4b-ONNX)                                       | Qwen3-4B-Base    | 2.3 GB / 2.5 GB             | Most accurate. 8192-token context. Needs a capable GPU.                                                                                                                                 |
+| `open-jev`             | [onnx-community/open-jev-deberta-v3-large-ONNX](https://huggingface.co/onnx-community/open-jev-deberta-v3-large-ONNX) | DeBERTa-v3-large | 0.35 GB / 0.48 GB           | Also ships `fp16` (0.88 GB) and `fp32` (1.75 GB). 512-token context.                                                                                                                    |
+| `gliner2-decide`       | [onnx-community/GLiNER2.5-Decide-ONNX](https://huggingface.co/onnx-community/GLiNER2.5-Decide-ONNX)                   | DeBERTa-v3-large | 0.52 GB / 0.89 GB           | Fastino's [GLiNER2.5-Decide](https://huggingface.co/fastino/GLiNER2.5-Decide), trained on 17 operational domains. Also ships `fp16` (0.87 GB) and `fp32` (1.74 GB). 1024-token default. |
+| `julia-1`              | [SupersonicLabs/Julia-1-ONNX](https://huggingface.co/SupersonicLabs/Julia-1-ONNX)                                     | mmBERT-small     | fp32 only: 0.58 GB          | Multilingual. One sequence per question, 2–20 options. 1024-token default.                                                                                                              |
+| `laya`                 | [onnx-community/laya-ONNX](https://huggingface.co/onnx-community/laya-ONNX)                                           | ModernBERT-large | fp16 0.85 GB / fp32 1.69 GB | Convai's [Laya](https://huggingface.co/convaiinnovations/laya), English. Calibrated temperatures. 512-token default.                                                                    |
+| `laya-typed-decisions` | [onnx-community/laya-typed-decisions-ONNX](https://huggingface.co/onnx-community/laya-typed-decisions-ONNX)           | ModernBERT-large | fp16 0.85 GB / fp32 1.69 GB | Laya fine-tuned on the four typed-decisions workflows. 1024-token default.                                                                                                              |
+| `laya-multilingual`    | [onnx-community/laya-multilingual-ONNX](https://huggingface.co/onnx-community/laya-multilingual-ONNX)                 | mmBERT-base      | fp16 0.65 GB / fp32 1.29 GB | Laya for 100+ languages. 1024-token default (the model reads up to 8192).                                                                                                               |
 
-Pass the alias as `model`, or any Hugging Face repo id whose `config.json` carries an `open_jev`, `kev` or `gliner2` section. The encoding family is detected from that config. Julia 1's export ships without a `config.json`, so `SupersonicLabs/Julia-1-ONNX` is recognized by its repo id and loaded as published.
+Pass the alias as `model`, or any Hugging Face repo id whose `config.json` carries an `open_jev`, `kev`, `gliner2` or `laya` section. The encoding family is detected from that config. Julia 1's export ships without a `config.json`, so `SupersonicLabs/Julia-1-ONNX` is recognized by its repo id and loaded as published.
 
 ## Install
 
@@ -33,7 +36,7 @@ const info = await OpenJev.info({ dtype: "q4f16" });
 console.log(info.isCached, info.downloadSize, info.device, info.dtype);
 
 const jev = await OpenJev.load({
-  model: "kev-0.6b", // default; or "kev-4b", "open-jev", "gliner2-decide", "julia-1"
+  model: "kev-0.6b", // default; or "kev-4b", "open-jev", "gliner2-decide", "julia-1", "laya"
   dtype: "q4f16",
   onProgress: ({ progress }) =>
     console.log(`Model download: ${Math.round(progress * 100)}%`),
@@ -103,6 +106,7 @@ Limits per model:
 | `kev-*`          | 1 to 255         | 2 to 255       |
 | `gliner2-decide` | 2 to 64          | 2 to 10        |
 | `julia-1`        | 2 to 20          | 2 to 20        |
+| `laya*`          | 2 to 64          | 2 to 20        |
 
 The builders are optional sugar. Plain objects work too:
 
@@ -157,17 +161,17 @@ type NoulAnswer = {
 Downloads (or reads from cache) the tokenizer and model and resolves to a ready instance. All options are optional:
 
 - `model` (default `"kev-0.6b"`)
-  - `"kev-0.6b"`, `"kev-4b"`, `"open-jev"`, `"gliner2-decide"`, `"julia-1"`, or a Hugging Face repo id / path Transformers.js understands.
+  - `"kev-0.6b"`, `"kev-4b"`, `"open-jev"`, `"gliner2-decide"`, `"julia-1"`, `"laya"`, `"laya-multilingual"`, `"laya-typed-decisions"`, or a Hugging Face repo id / path Transformers.js understands.
 - `dtype` (default `"auto"`)
-  - `fp32`, `fp16`, `q4` or `q4f16` (the kev models only ship `q4` and `q4f16`; `julia-1` only ships `fp32`).
+  - `fp32`, `fp16`, `q4` or `q4f16` (the kev models only ship `q4` and `q4f16`; `julia-1` only ships `fp32`; the laya models ship `fp32` and `fp16`).
   - `auto` picks the model's best WebGPU variant (`q4f16` for kev, `fp16` for open-jev) when `shader-f16` is supported, `q4` everywhere else. `julia-1` always uses `fp32`.
 - `device` (default `"auto"`)
   - `webgpu`, `wasm`, or `cpu` (Node.js).
   - `auto` picks `webgpu` when available, `cpu` in Node.js, otherwise `wasm`.
 - `onProgress`
   - Called with `{ progress, loaded, total }` while files download. `progress` is `0..1`, `loaded` and `total` are bytes. Only fires when the rounded value changes.
-- `maxLength` (default `512` for open-jev, `1024` for gliner2-decide and julia-1, `8192` for kev)
-  - Context limit. For open-jev and gliner2-decide the whole sequence; for kev the state plus one question branch; for julia-1 each question's own sequence (the model takes up to 8192). gliner2-decide reads longer inputs too. Its accuracy held up to 1,600 tokens in our tests, but each token adds about 2.4 ms on WebGPU.
+- `maxLength` (default `512` for open-jev and laya, `1024` for gliner2-decide, julia-1, laya-multilingual and laya-typed-decisions, `8192` for kev)
+  - Context limit. For open-jev and gliner2-decide the whole sequence; for kev the state plus one question branch; for julia-1 and laya each question's own sequence (the model takes up to 8192). gliner2-decide reads longer inputs too. Its accuracy held up to 1,600 tokens in our tests, but each token adds about 2.4 ms on WebGPU.
 - `temperature`, `maxStateTokens`, `truncation`
   - Defaults for `decide()`, see below.
 
@@ -184,9 +188,9 @@ Returns model cache/download metadata for a configuration (`model`, `device`, `d
 
 One forward pass, returns typed answers. Per-call options override the defaults given to `load()`:
 
-- `temperature` (default: open-jev's calibrated `1.05`, `1` for kev and julia-1)
+- `temperature` (default: open-jev's calibrated `1.05`, `1` for kev, julia-1 and laya; laya applies its own calibrated temperatures first)
   - Softmax temperature applied to each question's logits.
-- `maxStateTokens` (default `256` for open-jev, `896` for gliner2-decide, `8192` for kev; julia-1 gives the state whatever each question leaves of `maxLength`)
+- `maxStateTokens` (default `256` for open-jev, `896` for gliner2-decide, `8192` for kev; julia-1 and laya give the state whatever each question leaves of `maxLength`)
   - Token budget for the state. It is cut further if the questions would not fit in `maxLength`.
 - `truncation` (default `"cut"`)
   - `"cut"` drops trailing state tokens, `"error"` throws when the state does not fit.
@@ -242,6 +246,14 @@ For open-jev, kev and gliner2 a temperature-scaled softmax within each question'
 ```
 
 one sequence per question, batched. The graph takes the `<mask>` positions (`marker_pos`, `marker_mask`) and the question type (`qtype`) and returns one logit per option. Options may be 48 tokens each and the question with its options 256; longer ones throw rather than being cut. A described choice is fed as its description alone, and `noul` uses `["false", "true"]`, as in Julia's own typed API. Text is tokenized one space-free word at a time, because Transformers.js splits runs of spaces differently from the Rust `tokenizers` library the model was trained with; this reproduces the original token ids exactly.
+
+**laya** ([Convai Innovations](https://huggingface.co/convaiinnovations/laya); ModernBERT-large, or mmBERT-base for `laya-multilingual`):
+
+```
+[CLS] {type} question: instructions [SEP] [MASK] option_1 [MASK] option_2 … [SEP] state [SEP]
+```
+
+one sequence per question, batched, with the same graph inputs as Julia. This follows laya's own `build_sequence`: a described choice is `name: description`, a score level `level i: text`, and `noul` is `false: …` / `true: …` with its `descriptions` or laya's defaults. Options are cut to 48 tokens, and when options and question crowd the head budget (`head_max_len`, 192 or 256) they are shortened as laya does, rather than rejected. Each question's logits are divided by the checkpoint's calibrated temperature for its type and option count (clamped to 0.5–5), as `laya.Agent` does. The multilingual tokenizer is fed one word at a time, like Julia's. Against laya's Python `Agent`, token ids are identical and fp32 probabilities agree within 1e-4 (see the ONNX repos' cards).
 
 ## Development
 

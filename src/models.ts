@@ -12,6 +12,7 @@ import {
   type TokenizedQuestion,
 } from "./encoding";
 import { JULIA_REPOS, juliaConfig, juliaFamily } from "./julia";
+import { layaFamily } from "./laya";
 import { NOUL_OPTIONS, type QuestionLimits } from "./questions";
 import type { ModelAlias, ModelFamily, OpenJevDtype, Question } from "./types";
 
@@ -22,6 +23,9 @@ export const MODELS: Record<ModelAlias, string> = {
   "kev-4b": "onnx-community/kev-4b-ONNX",
   "julia-1": "SupersonicLabs/Julia-1-ONNX",
   "gliner2-decide": "onnx-community/GLiNER2.5-Decide-ONNX",
+  laya: "onnx-community/laya-ONNX",
+  "laya-multilingual": "onnx-community/laya-multilingual-ONNX",
+  "laya-typed-decisions": "onnx-community/laya-typed-decisions-ONNX",
 };
 
 export const DEFAULT_MODEL: ModelAlias = "kev-0.6b";
@@ -130,8 +134,11 @@ export function detectFamily(config: PretrainedConfig): FamilyAdapter {
   if (json.gliner2 && typeof json.gliner2 === "object") {
     return gliner2Family(json.gliner2 as ConfigJson);
   }
+  if (json.laya && typeof json.laya === "object") {
+    return layaFamily(json.laya as ConfigJson);
+  }
   throw new Error(
-    `Unsupported model: config.json has no "open_jev", "kev" or "gliner2" section. Use one of ${Object.keys(MODELS).join(", ")} or a compatible ONNX conversion.`,
+    `Unsupported model: config.json has no "open_jev", "kev", "gliner2" or "laya" section. Use one of ${Object.keys(MODELS).join(", ")} or a compatible ONNX conversion.`,
   );
 }
 
