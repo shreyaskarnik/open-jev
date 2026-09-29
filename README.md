@@ -6,12 +6,12 @@ It runs open reproductions of the _shape_ of TypeSafe AI's [Jev "System One" mod
 
 ## Models
 
-| Alias            | Repo                                                                                                                  | Base             | Weights (q4f16 / q4) | Notes                                                                                                                                                                                  |
-| ---------------- | --------------------------------------------------------------------------------------------------------------------- | ---------------- | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `kev-0.6b`       | [onnx-community/kev-0.6b-ONNX](https://huggingface.co/onnx-community/kev-0.6b-ONNX)                                   | Qwen3-0.6B-Base  | 0.34 GB / 0.38 GB    | Default. Small and fast. 8192-token context.                                                                                                                                           |
-| `kev-4b`         | [onnx-community/kev-4b-ONNX](https://huggingface.co/onnx-community/kev-4b-ONNX)                                       | Qwen3-4B-Base    | 2.3 GB / 2.5 GB      | Most accurate. 8192-token context. Needs a capable GPU.                                                                                                                                |
-| `open-jev`       | [onnx-community/open-jev-deberta-v3-large-ONNX](https://huggingface.co/onnx-community/open-jev-deberta-v3-large-ONNX) | DeBERTa-v3-large | 0.35 GB / 0.48 GB    | Also ships `fp16` (0.88 GB) and `fp32` (1.75 GB). 512-token context.                                                                                                                   |
-| `gliner2-decide` | [onnx-community/GLiNER2.5-Decide-ONNX](https://huggingface.co/onnx-community/GLiNER2.5-Decide-ONNX)                   | DeBERTa-v3-large | 0.52 GB / 0.89 GB    | Fastino's [GLiNER2.5-Decide](https://huggingface.co/fastino/GLiNER2.5-Decide), trained on 17 operational domains. Also ships `fp16` (0.87 GB) and `fp32` (1.74 GB). 512-token context. |
+| Alias            | Repo                                                                                                                  | Base             | Weights (q4f16 / q4) | Notes                                                                                                                                                                                   |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------- | ---------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `kev-0.6b`       | [onnx-community/kev-0.6b-ONNX](https://huggingface.co/onnx-community/kev-0.6b-ONNX)                                   | Qwen3-0.6B-Base  | 0.34 GB / 0.38 GB    | Default. Small and fast. 8192-token context.                                                                                                                                            |
+| `kev-4b`         | [onnx-community/kev-4b-ONNX](https://huggingface.co/onnx-community/kev-4b-ONNX)                                       | Qwen3-4B-Base    | 2.3 GB / 2.5 GB      | Most accurate. 8192-token context. Needs a capable GPU.                                                                                                                                 |
+| `open-jev`       | [onnx-community/open-jev-deberta-v3-large-ONNX](https://huggingface.co/onnx-community/open-jev-deberta-v3-large-ONNX) | DeBERTa-v3-large | 0.35 GB / 0.48 GB    | Also ships `fp16` (0.88 GB) and `fp32` (1.75 GB). 512-token context.                                                                                                                    |
+| `gliner2-decide` | [onnx-community/GLiNER2.5-Decide-ONNX](https://huggingface.co/onnx-community/GLiNER2.5-Decide-ONNX)                   | DeBERTa-v3-large | 0.52 GB / 0.89 GB    | Fastino's [GLiNER2.5-Decide](https://huggingface.co/fastino/GLiNER2.5-Decide), trained on 17 operational domains. Also ships `fp16` (0.87 GB) and `fp32` (1.74 GB). 1024-token default. |
 
 Pass the alias as `model`, or any Hugging Face repo id whose `config.json` carries an `open_jev`, `kev` or `gliner2` section. The encoding family is detected from that config.
 
@@ -164,8 +164,9 @@ Downloads (or reads from cache) the tokenizer and model and resolves to a ready 
   - `auto` picks `webgpu` when available, `cpu` in Node.js, otherwise `wasm`.
 - `onProgress`
   - Called with `{ progress, loaded, total }` while files download. `progress` is `0..1`, `loaded` and `total` are bytes. Only fires when the rounded value changes.
-- `maxLength` (default `512` for open-jev, `8192` for kev)
-  - Context limit. For open-jev the whole sequence; for kev the state plus one question branch.
+- `maxLength` (default `512` for open-jev, `1024` for gliner2-decide, `8192` for kev)
+  - Context limit. For open-jev and gliner2-decide the whole sequence; for kev the state plus one question branch.
+  - gliner2-decide reads longer inputs too. Its accuracy held up to 1,600 tokens in our tests, but each token adds about 2.4 ms on WebGPU.
 - `temperature`, `maxStateTokens`, `truncation`
   - Defaults for `decide()`, see below.
 
@@ -184,7 +185,7 @@ One forward pass, returns typed answers. Per-call options override the defaults 
 
 - `temperature` (default: open-jev's calibrated `1.05`, `1` for kev)
   - Softmax temperature applied to each question's logits.
-- `maxStateTokens` (default `256` for open-jev, `8192` for kev)
+- `maxStateTokens` (default `256` for open-jev, `896` for gliner2-decide, `8192` for kev)
   - Token budget for the state. It is cut further if the questions would not fit in `maxLength`.
 - `truncation` (default `"cut"`)
   - `"cut"` drops trailing state tokens, `"error"` throws when the state does not fit.
