@@ -3,9 +3,10 @@ import type { ProgressInfo } from "@huggingface/transformers";
 /**
  * ONNX weight variants. `open-jev` ships `fp32`, `fp16`, `q4` and `q4f16`;
  * the `kev` models ship `q4` and `q4f16`; `julia-1` ships `fp32`; the
- * `laya` models ship `fp32` and `fp16`.
+ * `laya` models ship `fp32` and `fp16`; `strands-decider-2b` ships `q8`
+ * (8-bit block weights, fp16 activations) and `q4f16`.
  */
-export type OpenJevDtype = "fp32" | "fp16" | "q4" | "q4f16";
+export type OpenJevDtype = "fp32" | "fp16" | "q8" | "q4" | "q4f16";
 
 /** Built-in model aliases. Any Hugging Face repo id with a compatible config works too. */
 export type ModelAlias =
@@ -16,12 +17,19 @@ export type ModelAlias =
   | "julia-1"
   | "laya"
   | "laya-multilingual"
-  | "laya-typed-decisions";
+  | "laya-typed-decisions"
+  | "strands-decider-2b";
 
 export type ModelId = ModelAlias | (string & {});
 
 /** Encoding family, detected from the repo's `config.json` (Julia 1: from its repo id). */
-export type ModelFamily = "open-jev" | "kev" | "gliner2" | "julia" | "laya";
+export type ModelFamily =
+  | "open-jev"
+  | "kev"
+  | "gliner2"
+  | "julia"
+  | "laya"
+  | "decider";
 
 /** Execution backends: `webgpu`/`wasm` in the browser, `cpu` in Node.js. */
 export type OpenJevDevice = "webgpu" | "wasm" | "cpu";

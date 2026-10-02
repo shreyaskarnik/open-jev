@@ -76,7 +76,8 @@ type LoadedParts = {
  * Create an instance with `OpenJev.load()`. Built-in models: `kev-0.6b`
  * (default) and `kev-4b` (Qwen3), `open-jev` (DeBERTa-v3-large) and
  * `gliner2-decide` (GLiNER2.5-Decide, DeBERTa-v3-large), `julia-1` (Julia 1, mmBERT-small) and
- * `laya`, `laya-multilingual` and `laya-typed-decisions` (Convai's Laya, ModernBERT / mmBERT).
+ * `laya`, `laya-multilingual` and `laya-typed-decisions` (Convai's Laya, ModernBERT / mmBERT) and
+ * `strands-decider-2b` (Strands Labs' decider, Qwen3.5-2B).
  */
 export class OpenJev {
   /** The model, family, backend and weight variant that were loaded. */
@@ -106,8 +107,8 @@ export class OpenJev {
    *
    * Supported options:
    * - `model`: `kev-0.6b` (default), `kev-4b`, `open-jev`, `gliner2-decide`, `julia-1`, `laya`,
-   *   `laya-multilingual`, `laya-typed-decisions` or a Hugging Face repo id.
-   * - `dtype`: `fp32 | fp16 | q4 | q4f16 | auto` (default `auto`).
+   *   `laya-multilingual`, `laya-typed-decisions`, `strands-decider-2b` or a Hugging Face repo id.
+   * - `dtype`: `fp32 | fp16 | q8 | q4 | q4f16 | auto` (default `auto`).
    * - `device`: `webgpu | wasm | cpu | auto` (default `auto`).
    * - `onProgress`: download progress callback.
    * - `temperature`, `maxStateTokens`, `truncation`: defaults for `decide()`.
