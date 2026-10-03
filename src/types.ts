@@ -18,7 +18,10 @@ export type ModelAlias =
   | "laya"
   | "laya-multilingual"
   | "laya-typed-decisions"
-  | "strands-decider-2b";
+  | "strands-decider-2b"
+  | "decision2-kai-0.6b"
+  | "decision2-eos-0.8b"
+  | "decision2-sol-2b";
 
 export type ModelId = ModelAlias | (string & {});
 
@@ -29,7 +32,8 @@ export type ModelFamily =
   | "gliner2"
   | "julia"
   | "laya"
-  | "decider";
+  | "decider"
+  | "decision2";
 
 /** Execution backends: `webgpu`/`wasm` in the browser, `cpu` in Node.js. */
 export type OpenJevDevice = "webgpu" | "wasm" | "cpu";

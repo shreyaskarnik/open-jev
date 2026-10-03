@@ -13,6 +13,7 @@ import {
 } from "./encoding";
 import { JULIA_REPOS, juliaConfig, juliaFamily } from "./julia";
 import { deciderFamily } from "./decider";
+import { decision2Family } from "./decision2";
 import { layaFamily } from "./laya";
 import { NOUL_OPTIONS, type QuestionLimits } from "./questions";
 import type { ModelAlias, ModelFamily, OpenJevDtype, Question } from "./types";
@@ -28,6 +29,9 @@ export const MODELS: Record<ModelAlias, string> = {
   "laya-multilingual": "onnx-community/laya-multilingual-ONNX",
   "laya-typed-decisions": "onnx-community/laya-typed-decisions-ONNX",
   "strands-decider-2b": "onnx-community/strands-decider-2B-hobson-v19-ONNX",
+  "decision2-kai-0.6b": "onnx-community/Decision-2.0-Kai-0.6B-ONNX",
+  "decision2-eos-0.8b": "onnx-community/Decision-2.0-Eos-0.8B-ONNX",
+  "decision2-sol-2b": "onnx-community/Decision-2.0-Sol-2B-ONNX",
 };
 
 export const DEFAULT_MODEL: ModelAlias = "kev-0.6b";
@@ -133,6 +137,9 @@ export function detectFamily(config: PretrainedConfig): FamilyAdapter {
   if (json.open_jev && typeof json.open_jev === "object") {
     return openJevFamily(json.open_jev as ConfigJson);
   }
+  if (json.decision2 && typeof json.decision2 === "object") {
+    return decision2Family(json.decision2 as ConfigJson);
+  }
   if (json.decider && typeof json.decider === "object") {
     return deciderFamily(json.decider as ConfigJson);
   }
@@ -143,7 +150,7 @@ export function detectFamily(config: PretrainedConfig): FamilyAdapter {
     return layaFamily(json.laya as ConfigJson);
   }
   throw new Error(
-    `Unsupported model: config.json has no "open_jev", "kev", "gliner2", "laya" or "decider" section. Use one of ${Object.keys(MODELS).join(", ")} or a compatible ONNX conversion.`,
+    `Unsupported model: config.json has no "open_jev", "kev", "gliner2", "laya", "decider" or "decision2" section. Use one of ${Object.keys(MODELS).join(", ")} or a compatible ONNX conversion.`,
   );
 }
 
